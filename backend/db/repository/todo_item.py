@@ -16,7 +16,7 @@ async def list_todos(db: Session):
     return pods
 
 
-async def get_todo_by_id(id: int, db: Session):
+async def get_todo(id: int, db: Session):
     item = db.query(Todo).filter(Todo.id == id).first()
     return item
 
@@ -24,20 +24,21 @@ async def get_todo_by_id(id: int, db: Session):
 async def update_todo_item(id:int, title: str, desc: str, todo: TodoCreate, db: Session):
     existing_todo = db.query(Todo).filter(Todo.id == id)  # get the element first
     if not existing_todo.first():
-        return 0
+        return False
     todo.__dict__.update(
         title=title,
         description=desc
     )  # update dictionary with new key value of owner_id
     existing_todo.update(todo.__dict__)
     db.commit()
-    return 1
+    return True
 
 
 async def remove_todo(id: int, db: Session):
     existing_item = db.query(Todo).filter(Todo.id == id)
+
     if not existing_item.first():
-        return 0
+        return False
     existing_item.delete(synchronize_session=False)
     db.commit()
-    return 1
+    return True
